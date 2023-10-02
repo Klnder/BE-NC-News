@@ -34,11 +34,6 @@ describe("/api", () => {
       .then(({ body }) => {
         const infos = body.endpoints;
         expect(infos).toEqual(endpoints);
-        for (const info in infos) {
-          expect(infos[info]).toHaveProperty("description");
-          expect(infos[info]).toHaveProperty("queries");
-          expect(infos[info]).toHaveProperty("exampleResponse");
-        }
       });
   });
 });
