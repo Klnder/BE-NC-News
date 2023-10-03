@@ -13,5 +13,9 @@ function handleCustomErrors(err, req, res, next) {
     next(err);
   }
 }
+function handle500Errors(err, req, res, next) {
+  console.log(err, "Error not handle");
+  res.status(500).send({ msg: "Server Error" });
+}
 
-module.exports = { handleCustomErrors, handlePsqlErrors };
+module.exports = { handleCustomErrors, handlePsqlErrors, handle500Errors };
