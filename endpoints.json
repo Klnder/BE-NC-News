@@ -1,8 +1,6 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api",
-    "queries": [],
-    "exampleResponse": []
+    "description": "serves up a json representation of all the available endpoints of the api"
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
@@ -45,6 +43,22 @@
       }
     }
   },
+  "POST /api/articles/:article_id/comments": {
+    "description": "post a comment to an article by it's ID",
+    "queries": [],
+    "body": {
+      "username": "test",
+      "body": "body"
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 19,
+        "body": "Jeremy is the best",
+        "article_id": 1,
+        "author": "butter_bridge",
+        "votes": 0,
+        "created_at": "2023-10-03T13:52:12.031Z"
+      }
   "GET /api/articles/:article_id/comments": {
     "description": "serve an array of comments for an article ID",
     "queries": [],
