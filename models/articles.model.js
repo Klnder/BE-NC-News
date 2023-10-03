@@ -23,6 +23,38 @@ function selectArticles() {
   });
 }
 
+function insertCommentByArticleId(id, { username, body }) {
+  //try with promise.allsettled
+  //couldn't retrieve different errors as already set
+  //need to look back at it if got time
+
+  //without promise.allsettled work as expected :)
+  return selectArticleById(id)
+    .then(() => {
+      return checkUsernameExist(username);
+    })
+    .then(() => {
+      const query = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`;
+      return db.query(query, [id, username, body]).then(({ rows }) => {
+        return rows[0];
+      });
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+function checkUsernameExist(username) {
+  const query = `SELECT * FROM users WHERE username=$1;`;
+  return db.query(query, [username]).then(({ rows }) => {
+    if (!rows[0]) {
+      return Promise.reject({ status: 404, msg: "username does not exist" });
+    } else {
+      return rows[0];
+    }
+  });
+}
+
 function selectCommentsByArticleId(id) {
   return selectArticleById(id)
     .then(() => {
@@ -36,6 +68,7 @@ function selectCommentsByArticleId(id) {
     });
 }
 
+
 function updateArticle(id, { inc_votes }) {
   return selectArticleById(id)
     .then(({ votes }) => {
@@ -48,4 +81,5 @@ function updateArticle(id, { inc_votes }) {
     });
 }
 
-module.exports = { selectArticleById, selectArticles, selectCommentsByArticleId, updateArticle };
+module.exports = { selectArticleById, selectArticles, insertCommentByArticleId ,selectCommentsByArticleId, updateArticle };
+

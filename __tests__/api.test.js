@@ -137,6 +137,76 @@ describe("/api/articles/:article_id", () => {
 });
 
 describe("/api/articles/:article_id/comments", () => {
+  test("POST:201 return new comment added", () => {
+    const comment = {
+      username: "butter_bridge",
+      body: "Jeremy is the best",
+    };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment.comment_id).toBe(19);
+        expect(comment.article_id).toBe(1);
+        expect(comment.body).toBe("Jeremy is the best");
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.votes).toBe(0);
+        expect(typeof comment.created_at).toBe("string");
+      });
+  });
+  test("POST:404 send appropriate status code / msg when valid id but not existent", () => {
+    const comment = {
+      username: "butter_bridge",
+      body: "Jeremy is the best",
+    };
+
+    return request(app)
+      .post("/api/articles/1000/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("article does not exist");
+      });
+  });
+  test("POST:400 send appropriate status code /msg when not valid id", () => {
+    const comment = {
+      username: "butter_bridge",
+      body: "Jeremy is the best",
+    };
+    return request(app)
+      .post("/api/articles/notanid/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST:404 send appropriate status code / msg when username not existent", () => {
+    //wrong username, or not correct username will return same (no psql error for username as a number)
+    const comment = {
+      username: "Jeremy",
+      body: "Jeremy is the best",
+    };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("username does not exist");
+      });
+  });
+  test("POST:400 send appropriate status code /msg when not valid comment", () => {
+    const comment = {
+      username: "butter_bridge",
+      id: "test",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(comment)
   test("GET:200 return comments for an article", () => {
     return request(app)
       .get("/api/articles/1/comments")
