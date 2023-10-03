@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 
 function selectArticleById(id) {
-  const query = `SELECT * FROM articles WHERE article_id=$1;`;
+  const query = `SELECT * FROM articles WHERE article_id=$1`;
   return db.query(query, [id]).then(({ rows }) => {
     if (!rows[0]) {
       return Promise.reject({ status: 404, msg: "article does not exist" });
@@ -68,18 +68,4 @@ function selectCommentsByArticleId(id) {
     });
 }
 
-
-function updateArticle(id, { inc_votes }) {
-  return selectArticleById(id)
-    .then(({ votes }) => {
-      const newVotes = votes + Number(inc_votes);
-      const query = `UPDATE articles SET votes=$1 WHERE article_id=$2 RETURNING *;`;
-      return db.query(query, [newVotes, id]);
-    })
-    .then(({ rows }) => {
-      return rows[0];
-    });
-}
-
-module.exports = { selectArticleById, selectArticles, insertCommentByArticleId ,selectCommentsByArticleId, updateArticle };
-
+module.exports = { selectArticleById, selectArticles, insertCommentByArticleId ,selectCommentsByArticleId };
