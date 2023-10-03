@@ -84,6 +84,56 @@ describe("/api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
+  test("PATCH:200 return updated article", () => {
+    const updateArticle = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateArticle)
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.article_id).toEqual(1);
+        expect(article.title).toEqual("Living in the shadow of a great man");
+        expect(article.topic).toEqual("mitch");
+        expect(article.author).toEqual("butter_bridge");
+        expect(article.body).toEqual("I find this existence challenging");
+        expect(article.created_at).toEqual("2020-07-09T20:11:00.000Z");
+        expect(article.votes).toEqual(105);
+        expect(article.article_img_url).toEqual(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  test("PATCH:404 send appropriate status code / msg when valid id but no existent", () => {
+    const updateArticle = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/1000")
+      .send(updateArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("article does not exist");
+      });
+  });
+  test("PATCH:400 send appropriate status code /msg when not valid id", () => {
+    const updateArticle = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/notanid")
+      .send(updateArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH:400 send appropriate status code/msg when not valid update article", () => {
+    const updateArticle = { inc_vot: "test" };
+    return request(app)
+      .patch("/api/articles/notanid")
+      .send(updateArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
@@ -92,7 +142,6 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         const comments = body.comments;
 
         expect(comments.length).toBe(11);
