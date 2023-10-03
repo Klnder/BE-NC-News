@@ -1,4 +1,4 @@
-const { selectArticleById, selectArticles } = require("../models/articles.model");
+const { selectArticleById, selectArticles, insertCommentByArticleId } = require("../models/articles.model");
 
 function getArticleById(req, res, next) {
   const id = req.params.article_id;
@@ -21,4 +21,16 @@ function getArticles(req, res, next) {
     });
 }
 
-module.exports = { getArticleById, getArticles };
+function postCommentByArticleId(req, res, next) {
+  const id = req.params.article_id;
+  const comment = req.body;
+  insertCommentByArticleId(id, comment)
+    .then((comment) => {
+      res.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { getArticleById, getArticles, postCommentByArticleId };
