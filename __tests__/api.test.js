@@ -207,6 +207,11 @@ describe("/api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
   test("GET:200 return comments for an article", () => {
     return request(app)
       .get("/api/articles/1/comments")
