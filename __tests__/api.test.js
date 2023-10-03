@@ -1,6 +1,6 @@
 const app = require("../server");
 const request = require("supertest");
-const fs = require("fs/promises");
+const jestSort = require("jest-sorted");
 
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
@@ -44,6 +44,7 @@ describe("/api/articles", () => {
           expect(typeof article.article_img_url).toBe("string");
           expect(typeof article.comment_count).toBe("number");
         });
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
 });
@@ -78,6 +79,58 @@ describe("/api/articles/:article_id", () => {
   test("GET:400 send appropriate status code /msg when not valid id", () => {
     return request(app)
       .get("/api/articles/notanid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET:200 return comments for an article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
+        const comments = body.comments;
+
+        expect(comments.length).toBe(11);
+
+        comments.forEach((comment) => {
+          expect(comment.article_id).toBe(1);
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+        });
+
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET:200 when article exist but does not have comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(0);
+        expect(typeof comments).toBe("object");
+      });
+  });
+
+  test("GET:404 send appropriate status code / msg when valid id but no existent", () => {
+    return request(app)
+      .get("/api/articles/1000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("article does not exist");
+      });
+  });
+  test("GET:400 send appropriate status code /msg when not valid id", () => {
+    return request(app)
+      .get("/api/articles/notanid/comments")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
