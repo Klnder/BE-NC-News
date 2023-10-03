@@ -22,4 +22,18 @@ function selectArticles() {
     return rows;
   });
 }
-module.exports = { selectArticleById, selectArticles };
+
+function selectCommentsByArticleId(id) {
+  return selectArticleById(id)
+    .then(() => {
+      const query = `SELECT * FROM comments 
+      WHERE article_id=$1
+      ORDER BY created_at DESC;`;
+      return db.query(query, [id]);
+    })
+    .then(({ rows }) => {
+      return rows;
+    });
+}
+
+module.exports = { selectArticleById, selectArticles, selectCommentsByArticleId };
