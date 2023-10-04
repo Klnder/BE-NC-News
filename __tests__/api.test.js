@@ -262,6 +262,23 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+describe("/api/users", () => {
+  test("GET:200 return all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const users = body.users;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+});
+
 describe("/api", () => {
   test("GET:200 return all api informations", () => {
     return request(app)

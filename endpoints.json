@@ -76,5 +76,18 @@
         }
       ]
     }
+  },
+  "GET /api/users": {
+    "description": "serve an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "pinpin",
+          "name": "jeremy",
+          "avatar_url": "https://....."
+        }
+      ]
+    }
   }
 }

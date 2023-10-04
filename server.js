@@ -3,6 +3,7 @@ const { handlePsqlErrors, handleCustomErrors, handle500Errors } = require("./con
 const { getTopics } = require("./controllers/topics.controller");
 const { getArticleById, getArticles, getCommentsByArticleId, patchArticle, postCommentByArticleId } = require("./controllers/articles.controller");
 const { getApiEndpoints } = require("./controllers/api.controller");
+const { getUsers } = require("./controllers/users.controller");
 const app = express();
 const port = 3000;
 
@@ -17,6 +18,8 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.get("/api", getApiEndpoints);
 app.patch("/api/articles/:article_id", patchArticle);
+
+app.get("/api/users", getUsers);
 
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "path not valid" });
