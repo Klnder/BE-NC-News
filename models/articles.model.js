@@ -25,6 +25,7 @@ function selectArticles(topic) {
   ORDER BY articles.created_at DESC;`;
 
   return db.query(query, values).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject({ status: 404, msg: "topic does not exist" });
     return rows;
   });
 }

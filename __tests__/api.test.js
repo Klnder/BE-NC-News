@@ -62,9 +62,9 @@ describe("/api/articles", () => {
   test("GET:200 and empty array when topic not existent", () => {
     return request(app)
       .get("/api/articles?topic=test")
-      .expect(200)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.articles.length).toBe(0);
+        expect(body.msg).toBe("topic does not exist");
       });
   });
 });
