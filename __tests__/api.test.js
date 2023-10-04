@@ -262,6 +262,28 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+describe("/api/comments/:comment_id", () => {
+  test("DELETE:204 return good status when comment exist", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("DELETE:404 send appropriate status/msg when comment does not exist", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+  test("DELETE:400 send appropriate status/msg when od not valid", () => {
+    return request(app)
+      .delete("/api/comments/notanid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
 describe("/api", () => {
   test("GET:200 return all api informations", () => {
     return request(app)

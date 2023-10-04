@@ -76,5 +76,10 @@
         }
       ]
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "delete comment by ID",
+    "queries": [],
+    "exampleResponse": "status 201 no body"
   }
 }
