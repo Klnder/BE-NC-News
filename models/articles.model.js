@@ -9,7 +9,8 @@ function selectArticleById(id) {
   });
 }
 
-function selectArticles(id) {
+
+function selectArticles(id, topic) {
   const values = [];
 
   let query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url,`;
@@ -22,15 +23,22 @@ function selectArticles(id) {
   LEFT JOIN comments 
   ON articles.article_id = comments.article_id `;
 
+
   if (id) {
-    query += `WHERE articles.article_id=$1 `;
+    query += `WHERE articles.article_id=$${values.length +1} `;
     values.push(id);
   }
 
+  if (topic) {
+    query += `WHERE articles.topic =$${values.length +1} `;
+    values.push(topic);
+  }
+  
   query += `GROUP BY articles.article_id 
   ORDER BY articles.created_at DESC;`;
 
   return db.query(query, values).then(({ rows }) => {
+    if (!rows[0] && topic) return Promise.reject({ status: 404, msg: "topic does not exist" });
     return rows;
   });
 }
