@@ -47,6 +47,26 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("GET:200 with topic in query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("GET:200 and empty array when topic not existent", () => {
+    return request(app)
+      .get("/api/articles?topic=test")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(0);
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
