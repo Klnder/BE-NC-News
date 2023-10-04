@@ -10,15 +10,22 @@ function selectArticleById(id) {
   });
 }
 
-function selectArticles() {
-  const query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::int as comment_count
+function selectArticles(topic) {
+  const values = [];
+  let query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::int as comment_count
   FROM articles
   LEFT JOIN comments 
-  ON articles.article_id = comments.article_id 
-  GROUP BY articles.article_id 
+  ON articles.article_id = comments.article_id `;
+
+  if (topic) {
+    query += `WHERE articles.topic =$1`;
+    values.push(topic);
+  }
+  query += `GROUP BY articles.article_id 
   ORDER BY articles.created_at DESC;`;
 
-  return db.query(query).then(({ rows }) => {
+  return db.query(query, values).then(({ rows }) => {
+    if (!rows[0]) return Promise.reject({ status: 404, msg: "topic does not exist" });
     return rows;
   });
 }
@@ -68,7 +75,6 @@ function selectCommentsByArticleId(id) {
     });
 }
 
-
 function updateArticle(id, { inc_votes }) {
   return selectArticleById(id)
     .then(({ votes }) => {
@@ -81,5 +87,4 @@ function updateArticle(id, { inc_votes }) {
     });
 }
 
-module.exports = { selectArticleById, selectArticles, insertCommentByArticleId ,selectCommentsByArticleId, updateArticle };
-
+module.exports = { selectArticleById, selectArticles, insertCommentByArticleId, selectCommentsByArticleId, updateArticle };
