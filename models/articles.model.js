@@ -1,24 +1,36 @@
 const db = require("../db/connection");
 
 function selectArticleById(id) {
-  const query = `SELECT * FROM articles WHERE article_id=$1;`;
-  return db.query(query, [id]).then(({ rows }) => {
-    if (!rows[0]) {
+  return selectArticles(id).then((article) => {
+    if (!article[0]) {
       return Promise.reject({ status: 404, msg: "article does not exist" });
     }
-    return rows[0];
+    return article[0];
   });
 }
 
-function selectArticles() {
-  const query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::int as comment_count
+function selectArticles(id) {
+  const values = [];
+
+  let query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url,`;
+
+  if (id) {
+    query += `articles.body, `;
+  }
+  query += `COUNT(comments.comment_id)::int as comment_count
   FROM articles
   LEFT JOIN comments 
-  ON articles.article_id = comments.article_id 
-  GROUP BY articles.article_id 
+  ON articles.article_id = comments.article_id `;
+
+  if (id) {
+    query += `WHERE articles.article_id=$1 `;
+    values.push(id);
+  }
+
+  query += `GROUP BY articles.article_id 
   ORDER BY articles.created_at DESC;`;
 
-  return db.query(query).then(({ rows }) => {
+  return db.query(query, values).then(({ rows }) => {
     return rows;
   });
 }
@@ -68,7 +80,6 @@ function selectCommentsByArticleId(id) {
     });
 }
 
-
 function updateArticle(id, { inc_votes }) {
   return selectArticleById(id)
     .then(({ votes }) => {
@@ -81,5 +92,4 @@ function updateArticle(id, { inc_votes }) {
     });
 }
 
-module.exports = { selectArticleById, selectArticles, insertCommentByArticleId ,selectCommentsByArticleId, updateArticle };
-
+module.exports = { selectArticleById, selectArticles, insertCommentByArticleId, selectCommentsByArticleId, updateArticle };

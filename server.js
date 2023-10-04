@@ -38,8 +38,8 @@ app.use(handleCustomErrors);
 app.use(handle500Errors);
 
 //listening
-// app.listen(port, () => {
-//   console.log(`API listening on port ${port}`);
-// });
+app.listen(port, () => {
+  console.log(`API listening on port ${port}`);
+});
 
 module.exports = app;
