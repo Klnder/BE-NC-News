@@ -89,7 +89,8 @@
           "avatar_url": "https://....."
         }
       ]
-    },
+    }
+  },
 
   "DELETE /api/comments/:comment_id": {
     "description": "delete comment by ID",

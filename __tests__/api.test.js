@@ -282,7 +282,6 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-
 describe("/api/users", () => {
   test("GET:200 return all users", () => {
     return request(app)
@@ -296,6 +295,7 @@ describe("/api/users", () => {
           expect(typeof user.name).toBe("string");
           expect(typeof user.avatar_url).toBe("string");
         });
+      });
   });
 });
 
