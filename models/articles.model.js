@@ -1,39 +1,34 @@
 const db = require("../db/connection");
 
 function selectArticleById(id) {
-  return selectArticles(id).then((article) => {
-    if (!article[0]) {
+  const query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url,articles.body, COUNT(comments.comment_id)::int as comment_count
+  FROM articles
+  LEFT JOIN comments 
+  ON articles.article_id = comments.article_id 
+  WHERE articles.article_id=$1
+  GROUP BY articles.article_id;`;
+
+  return db.query(query, [id]).then(({ rows }) => {
+    if (!rows[0]) {
       return Promise.reject({ status: 404, msg: "article does not exist" });
     }
-    return article[0];
+    return rows[0];
   });
 }
 
-
-function selectArticles(id, topic) {
+function selectArticles(topic) {
   const values = [];
 
-  let query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url,`;
-
-  if (id) {
-    query += `articles.body, `;
-  }
-  query += `COUNT(comments.comment_id)::int as comment_count
+  let query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::int as comment_count
   FROM articles
   LEFT JOIN comments 
   ON articles.article_id = comments.article_id `;
 
-
-  if (id) {
-    query += `WHERE articles.article_id=$${values.length +1} `;
-    values.push(id);
-  }
-
   if (topic) {
-    query += `WHERE articles.topic =$${values.length +1} `;
+    query += `WHERE articles.topic =$1`;
     values.push(topic);
   }
-  
+
   query += `GROUP BY articles.article_id 
   ORDER BY articles.created_at DESC;`;
 

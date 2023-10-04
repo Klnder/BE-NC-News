@@ -6,7 +6,6 @@ const { getApiEndpoints } = require("./controllers/api.controller");
 const { getUsers } = require("./controllers/users.controller");
 const { deleteComment } = require("./controllers/comments.controller");
 const app = express();
-const port = 3000;
 
 // Middleware Connections
 app.use(express.json());
@@ -36,10 +35,5 @@ app.all("/*", (req, res, next) => {
 app.use(handlePsqlErrors);
 app.use(handleCustomErrors);
 app.use(handle500Errors);
-
-//listening
-app.listen(port, () => {
-  console.log(`API listening on port ${port}`);
-});
 
 module.exports = app;
