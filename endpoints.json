@@ -77,6 +77,20 @@
       ]
     }
   },
+
+  "GET /api/users": {
+    "description": "serve an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "pinpin",
+          "name": "jeremy",
+          "avatar_url": "https://....."
+        }
+      ]
+    },
+
   "DELETE /api/comments/:comment_id": {
     "description": "delete comment by ID",
     "queries": [],

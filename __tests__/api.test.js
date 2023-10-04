@@ -262,6 +262,23 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+
+describe("/api/users", () => {
+  test("GET:200 return all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const users = body.users;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
+  });
+});
+
 describe("/api/comments/:comment_id", () => {
   test("DELETE:204 return good status when comment exist", () => {
     return request(app).delete("/api/comments/1").expect(204);
