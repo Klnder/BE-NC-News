@@ -210,7 +210,7 @@ describe("/api/articles/:article_id", () => {
   test("PATCH:400 send appropriate status code/msg when not valid update article", () => {
     const updateArticle = { inc_vot: "test" };
     return request(app)
-      .patch("/api/articles/notanid")
+      .patch("/api/articles/1")
       .send(updateArticle)
       .expect(400)
       .then(({ body }) => {
@@ -371,7 +371,7 @@ describe("/api/users", () => {
   });
 });
 
-describe.only("/api/users/:username", () => {
+describe("/api/users/:username", () => {
   test("GET:200 return 1 user", () => {
     const expected = {
       username: "butter_bridge",
@@ -411,6 +411,58 @@ describe("/api/comments/:comment_id", () => {
   test("DELETE:400 send appropriate status/msg when od not valid", () => {
     return request(app)
       .delete("/api/comments/notanid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH:200 return updated comment", () => {
+    const updateComment = { inc_votes: 5 };
+
+    const expected = {
+      comment_id: 1,
+      body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      article_id: 9,
+      author: "butter_bridge",
+      votes: 21,
+      created_at: "2020-04-06T12:17:00.000Z",
+    };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send(updateComment)
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.comment);
+        const comment = body.comment;
+        expect(comment).toMatchObject(expected);
+      });
+  });
+  test("PATCH:404 send appropriate status code / msg when valid id but no existent", () => {
+    const updateComment = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/comments/1000")
+      .send(updateComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+  test("PATCH:400 send appropriate status code /msg when not valid id", () => {
+    const updateComment = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/comments/notanid")
+      .send(updateComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH:400 send appropriate status code/msg when not valid update article", () => {
+    const updateArticle = { inc_vot: "test" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(updateArticle)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
