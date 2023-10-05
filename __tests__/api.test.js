@@ -371,6 +371,31 @@ describe("/api/users", () => {
   });
 });
 
+describe.only("/api/users/:username", () => {
+  test("GET:200 return 1 user", () => {
+    const expected = {
+      username: "butter_bridge",
+      name: "jonny",
+      avatar_url: "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+    };
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        const user = body.user;
+        expect(user).toMatchObject(expected);
+      });
+  });
+  test("GET:404 send appropriate status code / msg when valid username but not existent", () => {
+    return request(app)
+      .get("/api/users/test")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username does not exist");
+      });
+  });
+});
+
 describe("/api/comments/:comment_id", () => {
   test("DELETE:204 return good status when comment exist", () => {
     return request(app).delete("/api/comments/1").expect(204);
