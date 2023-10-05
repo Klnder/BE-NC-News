@@ -31,7 +31,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles", () => {
-  test("GET:200 return all articles", () => {
+  test("GET:200 return all articles sorted by created_at desc by default", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -76,6 +76,45 @@ describe("/api/articles", () => {
         articles.forEach((article) => {
           expect(article).toEqual(expect.objectContaining(expectedArticle));
         });
+      });
+  });
+  test("GET:200 with sort_by and order in query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const expectedArticle = {
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          title: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(Number),
+        };
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("author");
+        articles.forEach((article) => {
+          expect(article).toEqual(expect.objectContaining(expectedArticle));
+        });
+      });
+  });
+  test("GET:400 with sort_by not accepted", () => {
+    return request(app)
+      .get("/api/articles?sort_by=test&order=asc")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("GET:400 with order not accepted", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=test")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("GET:200 and empty array when topic not existent", () => {

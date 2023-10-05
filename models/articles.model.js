@@ -16,7 +16,26 @@ function selectArticleById(id) {
   });
 }
 
-function selectArticles(topic) {
+function selectArticles(topic, sort_by = "created_at", order = "desc") {
+  const validSortBy = {
+    article_id: "article_id",
+    title: "title",
+    topic: "topic",
+    author: "author",
+    body: "body",
+    created_at: "created_at",
+    votes: "votes",
+    article_img_url: "article_img_url",
+  };
+  const validOrder = {
+    asc: "ASC",
+    desc: "DESC",
+  };
+  //wrong query
+  if (!(sort_by in validSortBy) || !(order in validOrder)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
   const values = [];
 
   let query = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::int as comment_count
@@ -25,12 +44,12 @@ function selectArticles(topic) {
   ON articles.article_id = comments.article_id `;
 
   if (topic) {
-    query += `WHERE articles.topic =$1`;
+    query += `WHERE articles.topic=$1 `;
     values.push(topic);
   }
 
-  query += `GROUP BY articles.article_id 
-  ORDER BY articles.created_at DESC;`;
+  query += `GROUP BY articles.article_id `;
+  query += `ORDER BY articles.${sort_by} ${order};`;
 
   return db.query(query, values).then(({ rows }) => {
     if (!rows[0] && topic) return Promise.reject({ status: 404, msg: "topic does not exist" });
