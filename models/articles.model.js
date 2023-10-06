@@ -81,21 +81,13 @@ function insertCommentByArticleId(id, { username, body }) {
 function insertArticle(article) {
   const { author = "", title, body, topic = "", article_img_url } = article;
   const values = [title, topic, author, body];
+  let query = ``;
   if (article_img_url) {
     values.push(article_img_url);
+    query = `INSERT INTO articles (title, topic, author, body, article_img_url) VALUES ($1,$2,$3,$4,$5) RETURNING *;`;
+  } else {
+    query = `INSERT INTO articles (title, topic, author, body) VALUES ($1,$2,$3,$4) RETURNING *;`;
   }
-
-  let query = `INSERT INTO articles (title, topic, author, body`;
-
-  if (article_img_url) {
-    query += `,article_img_url`;
-  }
-  query += `) VALUES ($1,$2,$3,$4`;
-
-  if (article_img_url) {
-    query += `,$5`;
-  }
-  query += `) RETURNING *;`;
 
   //to add check topic :)
   return checkUsernameExist(author)
