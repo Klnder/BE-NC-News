@@ -288,6 +288,26 @@ describe("/api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
+
+  test("DELETE:204 return good status when article exist", () => {
+    return request(app).delete("/api/articles/1").expect(204);
+  });
+  test("DELETE:404 send appropriate status/msg when article does not exist", () => {
+    return request(app)
+      .delete("/api/articles/1000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
+      });
+  });
+  test("DELETE:400 send appropriate status/msg when id not valid", () => {
+    return request(app)
+      .delete("/api/articles/notanid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {

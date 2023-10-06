@@ -150,4 +150,25 @@ function updateArticle(id, { inc_votes }) {
     });
 }
 
-module.exports = { selectArticleById, selectArticles, insertCommentByArticleId, selectCommentsByArticleId, updateArticle, insertArticle };
+function removeArticle(id) {
+  const query1 = `DELETE FROM comments where article_id= $1; `;
+  const query = ` DELETE FROM articles WHERE article_id=$1;`;
+  return db
+    .query(query1, [id])
+    .then(() => {
+      return db.query(query, [id]);
+    })
+    .then(({ rowCount }) => {
+      if (rowCount === 0) return Promise.reject({ status: 404, msg: "article does not exist" });
+    });
+}
+
+module.exports = {
+  selectArticleById,
+  selectArticles,
+  insertCommentByArticleId,
+  selectCommentsByArticleId,
+  updateArticle,
+  insertArticle,
+  removeArticle,
+};

@@ -5,6 +5,7 @@ const {
   updateArticle,
   insertCommentByArticleId,
   insertArticle,
+  removeArticle,
 } = require("../models/articles.model");
 
 function getArticleById(req, res, next) {
@@ -75,4 +76,15 @@ function postArticle(req, res, next) {
     });
 }
 
-module.exports = { getArticleById, getArticles, postCommentByArticleId, getCommentsByArticleId, patchArticle, postArticle };
+function deleteArticle(req, res, next) {
+  const id = req.params.article_id;
+  removeArticle(id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { getArticleById, getArticles, postCommentByArticleId, getCommentsByArticleId, patchArticle, postArticle, deleteArticle };
