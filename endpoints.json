@@ -88,6 +88,11 @@
       }
     ]
   },
+  "DELETE /api/articles/:article_id": {
+    "description": "delete a article by ID",
+    "queries": [],
+    "exampleResponse": "204 no body"
+  },
   "POST /api/articles/:article_id/comments": {
     "description": "post a comment to an article by it's ID",
     "queries": [],
@@ -153,7 +158,7 @@
   "DELETE /api/comments/:comment_id": {
     "description": "delete comment by ID",
     "queries": [],
-    "exampleResponse": "status 201 no body"
+    "exampleResponse": "status 204 no body"
   },
   "PATCH /api/comments/:comment_id": {
     "description": "update a comment by ID",

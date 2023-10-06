@@ -28,6 +28,40 @@ describe("/api/topics", () => {
         });
       });
   });
+  test("POST:201 return new topic added", () => {
+    const topic = {
+      slug: "test",
+      description: "this is a test",
+    };
+
+    const expectedTopic = {
+      slug: "test",
+      description: "this is a test",
+    };
+
+    return request(app)
+      .post("/api/topics")
+      .send(topic)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic;
+        expect(topic).toEqual(expect.objectContaining(expectedTopic));
+      });
+  });
+
+  test("POST:400 send appropriate status code /msg when not valid topic", () => {
+    const topic = {
+      test: "test",
+      description: "this is a test",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(topic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/articles", () => {

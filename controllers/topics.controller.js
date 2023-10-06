@@ -1,9 +1,20 @@
-const { fetchTopics } = require("../models/topics.model");
+const { fetchTopics, insertTopic } = require("../models/topics.model");
 
-function getTopics(req, res) {
+function getTopics(req, res, next) {
   fetchTopics().then((topics) => {
     res.status(200).send({ topics });
   });
 }
 
-module.exports = { getTopics };
+function postTopic(req, res, next) {
+  const topic = req.body;
+  insertTopic(topic)
+    .then((topic) => {
+      res.status(201).send({ topic });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { getTopics, postTopic };
