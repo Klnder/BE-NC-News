@@ -78,11 +78,55 @@ function insertCommentByArticleId(id, { username, body }) {
     });
 }
 
+function insertArticle(article) {
+  const { author = "", title, body, topic = "", article_img_url } = article;
+  const values = [title, topic, author, body];
+  if (article_img_url) {
+    values.push(article_img_url);
+  }
+
+  let query = `INSERT INTO articles (title, topic, author, body`;
+
+  if (article_img_url) {
+    query += `,article_img_url`;
+  }
+  query += `) VALUES ($1,$2,$3,$4`;
+
+  if (article_img_url) {
+    query += `,$5`;
+  }
+  query += `) RETURNING *;`;
+
+  //to add check topic :)
+  return checkUsernameExist(author)
+    .then(() => {
+      return checkTopicExist(topic);
+    })
+    .then(() => {
+      return db.query(query, values).then(({ rows }) => {
+        return rows[0];
+      });
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
 function checkUsernameExist(username) {
   const query = `SELECT * FROM users WHERE username=$1;`;
   return db.query(query, [username]).then(({ rows }) => {
     if (!rows[0]) {
       return Promise.reject({ status: 404, msg: "username does not exist" });
+    } else {
+      return rows[0];
+    }
+  });
+}
+function checkTopicExist(topic) {
+  const query = `SELECT * FROM topics WHERE slug=$1;`;
+  return db.query(query, [topic]).then(({ rows }) => {
+    if (!rows[0]) {
+      return Promise.reject({ status: 404, msg: "topic does not exist" });
     } else {
       return rows[0];
     }
@@ -114,4 +158,4 @@ function updateArticle(id, { inc_votes }) {
     });
 }
 
-module.exports = { selectArticleById, selectArticles, insertCommentByArticleId, selectCommentsByArticleId, updateArticle };
+module.exports = { selectArticleById, selectArticles, insertCommentByArticleId, selectCommentsByArticleId, updateArticle, insertArticle };

@@ -125,6 +125,77 @@ describe("/api/articles", () => {
         expect(body.msg).toBe("topic does not exist");
       });
   });
+  test("POST:201 return new article added", () => {
+    const article = {
+      author: "butter_bridge",
+      title: "this is a test",
+      body: "best book ever",
+      topic: "mitch",
+    };
+
+    const expectedArticle = {
+      article_id: 14,
+      title: "this is a test",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "best book ever",
+      votes: 0,
+      article_img_url: "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+      created_at: expect.any(String),
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(article)
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toEqual(expect.objectContaining(expectedArticle));
+      });
+  });
+  test("POST:404 send appropriate status code / msg when topic not existent", () => {
+    const article = {
+      author: "butter_bridge",
+      title: "this is a test",
+      body: "best book ever",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(article)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("topic does not exist");
+      });
+  });
+  test("POST:404 send appropriate status code /msg when author does not exist", () => {
+    const article = {
+      title: "this is a test",
+      body: "best book ever",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(article)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username does not exist");
+      });
+  });
+  test("POST:400 send appropriate status code /msg when not valid article (but good author and topic)", () => {
+    const article = {
+      author: "butter_bridge",
+      title: "this is a test",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(article)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
@@ -433,7 +504,6 @@ describe("/api/comments/:comment_id", () => {
       .send(updateComment)
       .expect(200)
       .then(({ body }) => {
-        console.log(body.comment);
         const comment = body.comment;
         expect(comment).toMatchObject(expected);
       });

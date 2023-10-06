@@ -1,4 +1,11 @@
-const { selectArticleById, selectArticles, selectCommentsByArticleId, updateArticle, insertCommentByArticleId } = require("../models/articles.model");
+const {
+  selectArticleById,
+  selectArticles,
+  selectCommentsByArticleId,
+  updateArticle,
+  insertCommentByArticleId,
+  insertArticle,
+} = require("../models/articles.model");
 
 function getArticleById(req, res, next) {
   const id = req.params.article_id;
@@ -57,4 +64,15 @@ function postCommentByArticleId(req, res, next) {
     });
 }
 
-module.exports = { getArticleById, getArticles, postCommentByArticleId, getCommentsByArticleId, patchArticle };
+function postArticle(req, res, next) {
+  const article = req.body;
+  insertArticle(article)
+    .then((article) => {
+      res.status(201).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { getArticleById, getArticles, postCommentByArticleId, getCommentsByArticleId, patchArticle, postArticle };
