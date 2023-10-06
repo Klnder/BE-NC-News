@@ -27,6 +27,28 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "create a new article",
+    "queries": [],
+    "body": {
+      "author": "butter_bridge",
+      "title": "this is a test",
+      "body": "best book ever",
+      "topic": "mitch"
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 14,
+        "title": "this is a test",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "best book ever",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+        "created_at": "date..."
+      }
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "get an article by it's ID",
     "queries": [],
