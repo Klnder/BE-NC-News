@@ -9,6 +9,18 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "add a new topic",
+    "queries": [],
+    "body": {
+      "slug": "test",
+      "description": "test"
+    },
+    "exampleResponse": {
+      "slug": "test",
+      "description": "test"
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["topic", "sort_by", "order"],
